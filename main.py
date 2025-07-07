@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[89]:
+# In[1]:
 
 
 get_ipython().system('pip install xgboost')
@@ -57,21 +57,21 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# In[90]:
+# In[2]:
 
 
 train=pd.read_csv('data/train_data.csv')
 train.head()
 
 
-# In[91]:
+# In[3]:
 
 
 test_val=pd.read_csv('data/test_data_hidden.csv')
 test_val.head()
 
 
-# In[92]:
+# In[4]:
 
 
 test= pd.read_csv("data/test_data.csv")
@@ -80,7 +80,7 @@ test.head()
 
 # ### Exploratory Data Analysis
 
-# In[93]:
+# In[5]:
 
 
 train.duplicated().sum(), test.duplicated().sum(), test_val.duplicated().sum()
@@ -88,31 +88,31 @@ train.duplicated().sum(), test.duplicated().sum(), test_val.duplicated().sum()
 
 # Train dataset contains 58 duplicate records and train dataset contains 3 duplicate records.
 
-# In[94]:
+# In[6]:
 
 
 train.drop_duplicates(inplace=True)
 
 
-# In[95]:
+# In[7]:
 
 
 train.duplicated().sum()
 
 
-# In[96]:
+# In[8]:
 
 
 train.shape
 
 
-# In[97]:
+# In[9]:
 
 
 train.info()
 
 
-# In[98]:
+# In[10]:
 
 
 test_val.info()
@@ -120,7 +120,7 @@ test_val.info()
 
 # Train dataset contains 10 missing values in 'reviews.title' column and test dataset contains 3 missing values in 'reviews.title' column.
 
-# In[99]:
+# In[11]:
 
 
 #pd.set_option('display.max_colwidth',200)
@@ -128,25 +128,25 @@ test_val.info()
 
 # Reviews containing Positive Sentiments
 
-# In[100]:
+# In[12]:
 
 
 train[train.sentiment=='Positive'][['reviews.text','reviews.title']].head(10)
 
 
-# In[101]:
+# In[13]:
 
 
 train[train.sentiment=='Neutral'][['reviews.text','reviews.title']].head(10)
 
 
-# In[102]:
+# In[14]:
 
 
 train[train.sentiment=='Negative'][['reviews.text','reviews.title']].head(10)
 
 
-# In[103]:
+# In[15]:
 
 
 train.sentiment.value_counts()
@@ -155,13 +155,13 @@ train.sentiment.value_counts()
 # ### Class Imbalance Problem
 # In the train dataset, we have 3,749 (~95.1%) sentiments labeled as positive, and 1,58 (~4%) sentiments labeled as Neutral and 93(~2.35%) sentiments as Negative. So, it is an imbalanced classification problem.
 
-# In[104]:
+# In[16]:
 
 
 pd.DataFrame(train.name.value_counts())
 
 
-# In[105]:
+# In[17]:
 
 
 #name = pd.DataFrame(train.name.str.split(',').tolist()).stack().unique()
@@ -169,31 +169,31 @@ pd.DataFrame(train.name.value_counts())
 #name
 
 
-# In[106]:
+# In[18]:
 
 
 train.brand.value_counts() , test_val.brand.value_counts()
 
 
-# In[107]:
+# In[19]:
 
 
 train.primaryCategories.value_counts()
 
 
-# In[108]:
+# In[20]:
 
 
 test_val.primaryCategories.value_counts()
 
 
-# In[109]:
+# In[21]:
 
 
 pd.DataFrame(train.categories.value_counts())
 
 
-# In[110]:
+# In[22]:
 
 
 #categories = pd.DataFrame(train.categories.str.split(',').tolist()).stack().unique()
@@ -201,7 +201,7 @@ pd.DataFrame(train.categories.value_counts())
 #categories
 
 
-# In[111]:
+# In[23]:
 
 
 train.dtypes
@@ -209,7 +209,7 @@ train.dtypes
 
 # ### Data Cleaning
 
-# In[112]:
+# In[24]:
 
 
 # Removing brand column
@@ -241,7 +241,7 @@ del test_val['reviews.date']
 train.head()
 
 
-# In[113]:
+# In[25]:
 
 
 # Lebel Encoding for item names, categories, primary categories
@@ -267,7 +267,7 @@ test['categories'] = le_cat.transform(test.categories)
 test['primaryCategories'] = le_pri.transform(test.primaryCategories)
 
 
-# In[114]:
+# In[26]:
 
 
 # Missing Values 
@@ -276,7 +276,7 @@ test_val['reviews.title'].fillna(value=' ',inplace=True)
 test['reviews.title'].fillna(value=' ',inplace=True)
 
 
-# In[115]:
+# In[27]:
 
 
 # Text data cleaning : reviews.text, reviews.title
@@ -312,7 +312,7 @@ for i in (train,test_val,test):
     i['reviews.title']=i['reviews.title'].apply(data_cleaner) 
 
 
-# In[116]:
+# In[28]:
 
 
 test[['reviews.text','reviews.title']].head(10)
@@ -320,7 +320,7 @@ test[['reviews.text','reviews.title']].head(10)
 
 # ### Visualization
 
-# In[117]:
+# In[29]:
 
 
 train_len=train["reviews.text"].str.len()
@@ -334,7 +334,7 @@ plt.ylabel('Reviews Count')
 plt.show()
 
 
-# In[118]:
+# In[30]:
 
 
 all_text = ' '.join([text for text in train['reviews.text']])
@@ -343,7 +343,7 @@ neg_text = ' '.join([text for text in train['reviews.text'][train['sentiment']==
 neu_text = ' '.join([text for text in train['reviews.text'][train['sentiment']=='Neutral']])
 
 
-# In[119]:
+# In[31]:
 
 
 wordcloud = WordCloud(width=1600, height=800, random_state=21, max_font_size=180).generate(pos_text)
@@ -354,7 +354,7 @@ plt.title(' POSITIVE REVIEWS')
 plt.show()
 
 
-# In[120]:
+# In[32]:
 
 
 wordcloud = WordCloud(height=800, width=1600, random_state=21,max_font_size=180).generate(neg_text)
@@ -365,7 +365,7 @@ plt.title(' NEGATIVE REVIEWS')
 plt.show()
 
 
-# In[121]:
+# In[33]:
 
 
 wordcloud = WordCloud(height=800, width=1600, random_state=21,max_font_size=180).generate(neu_text)
@@ -376,7 +376,7 @@ plt.title('NEUTRAL REVIEWS')
 plt.show()
 
 
-# In[122]:
+# In[34]:
 
 
 le_senti = LabelEncoder()
@@ -384,7 +384,7 @@ train['sentiment'] = le_senti.fit_transform(train['sentiment'])
 test_val['sentiment'] = le_senti.fit_transform(test_val['sentiment'])
 
 
-# In[123]:
+# In[35]:
 
 
 train.head()
@@ -392,7 +392,7 @@ train.head()
 
 # ### TFIDF Vectorizer
 
-# In[124]:
+# In[36]:
 
 
 tvec1 = TfidfVectorizer()
@@ -400,7 +400,7 @@ tvec2 = TfidfVectorizer()
 tvec3 = TfidfVectorizer()
 
 
-# In[125]:
+# In[37]:
 
 
 # Preparing Features X(text,title) and Label y(sentiment)
@@ -426,7 +426,7 @@ x_val1=Test_Val1.values
 y_val1 = test_val['sentiment'].values
 
 
-# In[126]:
+# In[38]:
 
 
 from nltk.tokenize import RegexpTokenizer
@@ -450,7 +450,7 @@ words = tvec3.get_feature_names_out()
 
 # ### Multinomial Naive Bayes
 
-# In[127]:
+# In[39]:
 
 
 nb = MultinomialNB()
@@ -468,13 +468,13 @@ print(accuracy_score(y_val, y_pred)*100)
 # 
 # #### Tackling Class Imbalance Problem:
 
-# In[128]:
+# In[40]:
 
 
 train.sentiment.value_counts()
 
 
-# In[129]:
+# In[41]:
 
 
 count_2, count_1, count_0 =train.sentiment.value_counts()
@@ -486,7 +486,7 @@ count_2, count_1, count_0
 
 # #### 1. UnderSampling
 
-# In[130]:
+# In[42]:
 
 
 class_2_under = class_2.sample(count_1)
@@ -498,7 +498,7 @@ print(train_under.sentiment.value_counts())
 # #### 2. OverSampling
 # 
 
-# In[131]:
+# In[43]:
 
 
 class_0_over = class_0.sample(count_2,replace=True)
@@ -508,7 +508,7 @@ print(train_over.shape)
 print(train_over.sentiment.value_counts())
 
 
-# In[132]:
+# In[44]:
 
 
 lr= LogisticRegression(C=30, class_weight='balanced', solver='sag', 
@@ -518,7 +518,7 @@ lr= LogisticRegression(C=30, class_weight='balanced', solver='sag',
 
 # #### TFIDF Vectorizer for under-sampled data
 
-# In[133]:
+# In[45]:
 
 
 train = train_under.reset_index(drop=True) 
@@ -544,7 +544,7 @@ y_val = test_val['sentiment']
 
 # ### Logistic Regression for under-sampled data
 
-# In[134]:
+# In[46]:
 
 
 lr.fit(x_train,y_train)
@@ -554,7 +554,7 @@ print(classification_report(y_true=y_val, y_pred=y_pred))
 print('accuracy : ',accuracy_score(y_val, y_pred)*100)
 
 
-# In[135]:
+# In[47]:
 
 
 lb = LabelBinarizer()
@@ -587,7 +587,7 @@ plt.show()
 
 # #### TFIDF Vectorizer for over-sampled data
 
-# In[136]:
+# In[48]:
 
 
 train = train_over.reset_index(drop=True) 
@@ -614,7 +614,7 @@ y_val = test_val['sentiment'].values
 
 # ### Logistic Regression for over-sampled data
 
-# In[137]:
+# In[49]:
 
 
 lr.fit(x_train,y_train)
@@ -626,7 +626,7 @@ print('accuracy : ',accuracy_score(y_val, y_pred)*100)
 
 # Logistic Regression on over-sampled data is perfrorming better than under-sampled data
 
-# In[138]:
+# In[50]:
 
 
 lb = LabelBinarizer()
@@ -659,7 +659,7 @@ plt.show()
 
 # ### Multinomial Naive Bayes
 
-# In[139]:
+# In[51]:
 
 
 nb = MultinomialNB()
@@ -672,7 +672,7 @@ print(nb.score(x_train,y_train))
 print(nb.score(x_val,y_val))
 
 
-# In[140]:
+# In[52]:
 
 
 lb = LabelBinarizer()
@@ -705,7 +705,7 @@ plt.show()
 
 # ### Random Forest Classifier
 
-# In[141]:
+# In[53]:
 
 
 rf= RandomForestClassifier(n_estimators=400,random_state=10).fit(x_train,y_train)
@@ -717,7 +717,7 @@ print(rf.score(x_train,y_train))
 print(rf.score(x_val,y_val))
 
 
-# In[142]:
+# In[54]:
 
 
 lb = LabelBinarizer()
@@ -750,7 +750,7 @@ plt.show()
 
 # ### XGBClassifier
 
-# In[143]:
+# In[55]:
 
 
 xgb= XGBClassifier(n_estimators=1000,max_depth=6).fit(x_train,y_train)
@@ -760,7 +760,7 @@ print(classification_report(y_true=y_val, y_pred=y_pred))
 print("accuracy : ",accuracy_score(y_val, y_pred)*100)
 
 
-# In[144]:
+# In[56]:
 
 
 lb = LabelBinarizer()
@@ -795,7 +795,7 @@ plt.show()
 
 # ### Multi-class SVM
 
-# In[145]:
+# In[57]:
 
 
 svc = SVC(kernel='linear', class_weight='balanced', C=1.0, random_state=0).fit(x_train, y_train) 
@@ -805,7 +805,7 @@ print(classification_report(y_true=y_val, y_pred=y_pred))
 print("accuracy : ",accuracy_score(y_val, y_pred)*100)
 
 
-# In[146]:
+# In[58]:
 
 
 lb = LabelBinarizer()
@@ -839,13 +839,13 @@ plt.show()
 # Naive Bayes
 # 
 
-# In[147]:
+# In[59]:
 
 
 y_train2 = label_binarize(y_train1, classes=[0, 1, 2])
 
 
-# In[148]:
+# In[60]:
 
 
 #The model with sequential API
@@ -870,7 +870,7 @@ print(confusion_matrix(y_test, y_pred_bool))
 print(classification_report(y_test, y_pred_bool))
 
 
-# In[149]:
+# In[61]:
 
 
 class_weights = class_weight.compute_class_weight(class_weight='balanced',
@@ -880,7 +880,7 @@ class_weight_dict = dict(enumerate(class_weights))
 class_weight_dict
 
 
-# In[150]:
+# In[62]:
 
 
 # Using Class-Weights
@@ -899,7 +899,7 @@ print(classification_report(y_test, y_pred_bool))
 
 # Using class-weights does not improve the performance
 
-# In[151]:
+# In[63]:
 
 
 #using dropouts
@@ -921,13 +921,13 @@ print(classification_report(y_test, y_pred_bool))
 
 # Using drop out chances of predicting second class increases
 
-# In[152]:
+# In[64]:
 
 
 y_train3 = label_binarize(y_train, classes=[0, 1, 2])
 
 
-# In[153]:
+# In[65]:
 
 
 #for over-sampled data
@@ -949,7 +949,7 @@ print(classification_report(y_test, y_pred_bool))
 # 
 # ### ensemble technique using Voting Classifier: XGboost + oversampled_multinomial_NB
 
-# In[154]:
+# In[66]:
 
 
 from sklearn.ensemble import VotingClassifier
@@ -967,7 +967,7 @@ print("accuracy : ",accuracy_score(y_val, y_pred)*100)
 # 
 # ### Sentiment Score
 
-# In[155]:
+# In[67]:
 
 
 get_ipython().system('pip install textblob')
@@ -991,7 +991,7 @@ test_val['polarity'] = test_val['reviews.text'].apply(polarity)
 train['senti_score'].head()
 
 
-# In[156]:
+# In[68]:
 
 
 Train = pd.concat([train.drop(['reviews.text','reviews.title','sentiment','senti_score'],axis=1),tvec_text1, tvec_title1],axis=1)
@@ -1002,7 +1002,7 @@ x_val=Test_Val.values
 y_val = test_val['sentiment']
 
 
-# In[157]:
+# In[69]:
 
 
 nb = MultinomialNB()
@@ -1020,7 +1020,7 @@ print(nb.score(x_val,y_val))
 # 
 # #### LSTM
 
-# In[158]:
+# In[70]:
 
 
 from sklearn.preprocessing import label_binarize
@@ -1058,7 +1058,7 @@ print(confusion_matrix(y_test, y_pred_bool))
 print(classification_report(y_test, y_pred_bool))
 
 
-# In[159]:
+# In[71]:
 
 
 from sklearn.preprocessing import label_binarize
@@ -1108,7 +1108,7 @@ print(confusion_matrix(y_test, y_pred_bool))
 print(classification_report(y_test, y_pred_bool))
 
 
-# In[160]:
+# In[72]:
 
 
 from sklearn.preprocessing import label_binarize
@@ -1150,7 +1150,7 @@ print(classification_report(y_test, y_pred_bool))
 
 # #### GRU
 
-# In[161]:
+# In[73]:
 
 
 from sklearn.preprocessing import label_binarize
@@ -1193,13 +1193,13 @@ print(classification_report(y_test, y_pred_bool))
 # 
 # ### Clustering of Reviews
 
-# In[162]:
+# In[74]:
 
 
 print(words[250:300])
 
 
-# In[163]:
+# In[75]:
 
 
 from sklearn.cluster import KMeans
@@ -1219,7 +1219,7 @@ plt.show()
 # 
 # ### 11 Clusters
 
-# In[164]:
+# In[76]:
 
 
 kmeans = KMeans(n_clusters = 11, n_init = 20) 
@@ -1232,7 +1232,7 @@ for num, centroid in enumerate(common_words):
 
 # ### 13 Clusters
 
-# In[165]:
+# In[77]:
 
 
 kmeans = KMeans(n_clusters = 13, n_init = 20) 
@@ -1245,7 +1245,7 @@ for num, centroid in enumerate(common_words):
 
 # ### Topic Modelling
 
-# In[166]:
+# In[78]:
 
 
 from sklearn.decomposition import LatentDirichletAllocation as LDA
@@ -1267,7 +1267,7 @@ print("Topics found via LDA:")
 print_topics(lda, tvec3, number_words)
 
 
-# In[167]:
+# In[79]:
 
 
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -1275,7 +1275,7 @@ tfidf = TfidfVectorizer()
 X = tfidf.fit_transform(train['reviews.text'])  # use your dataframe column as corpus
 
 
-# In[168]:
+# In[80]:
 
 
 import pickle
@@ -1289,7 +1289,7 @@ with open('vectorizer.pkl', 'wb') as f:
     pickle.dump(tfidf, f)
 
 
-# In[ ]:
+# In[81]:
 
 
 # train_model.py
