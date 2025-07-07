@@ -57,8 +57,6 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# ### Project Week 1 Tasks:
-
 # In[90]:
 
 
@@ -838,8 +836,8 @@ plt.legend(loc="lower right")
 plt.show()
 
 
-# ## Project Task: Week 3
-# ### Neural Network
+# Naive Bayes
+# 
 
 # In[147]:
 
@@ -1019,7 +1017,7 @@ print(nb.score(x_val,y_val))
 
 # Sentiment Score does not have much affect on the performance
 # 
-# ### Project Task: Week 4
+# 
 # #### LSTM
 
 # In[158]:
@@ -1291,7 +1289,7 @@ with open('vectorizer.pkl', 'wb') as f:
     pickle.dump(tfidf, f)
 
 
-# In[169]:
+# In[ ]:
 
 
 # train_model.py
@@ -1309,7 +1307,7 @@ df = df.dropna(subset=["reviews.text", "label"])
 # Features and labels
 X = df["reviews.text"]
 y = df["label"]
-
+#ndjjjd
 # Create pipeline (vectorizer + model)
 pipeline = Pipeline([
     ("tfidf", TfidfVectorizer(max_features=5000)),
