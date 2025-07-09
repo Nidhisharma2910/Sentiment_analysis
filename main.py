@@ -118,6 +118,12 @@ train.info()
 test_val.info()
 
 
+# In[ ]:
+
+
+
+
+
 # Train dataset contains 10 missing values in 'reviews.title' column and test dataset contains 3 missing values in 'reviews.title' column.
 
 # In[11]:
@@ -1289,7 +1295,7 @@ with open('vectorizer.pkl', 'wb') as f:
     pickle.dump(tfidf, f)
 
 
-# In[81]:
+# In[5]:
 
 
 # train_model.py
@@ -1300,24 +1306,81 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 import joblib
 
-# Load data
+
+
+# Step 1: Load data
 df = pd.read_csv("train_data.csv")
 df = df.dropna(subset=["reviews.text", "label"])
 
-# Features and labels
+# Step 2: Add custom negation examples
+custom_examples = pd.DataFrame({
+    "reviews.text": [
+        "this product is not bad",
+        "not bad at all",
+        "not horrible",
+        "not good",
+        "not the worst",
+        "not a bad product",
+        "it's not awful",
+        "not terrible",
+        "it's not great",
+        "it's not that bad",
+        "this product is bad",
+        "very bad product",
+        "bad quality",
+        "worst product ever",
+        "not satisfied",
+        "really bad experience",
+        "complete waste of money",
+        "bad build quality",
+        "terrible product",
+        "did not like the product"
+
+    ],
+    "label": [
+        2, 2, 2, 0, 2, 2, 2, 2, 1, 2 ,0, 0, 0, 0, 0, 0, 0, 0, 0, 0 # Adjust sentiment: 0 = Negative, 1 = Neutral, 2 = Positive
+    ]
+})
+
+# Combine with original data
+df = pd.concat([df, custom_examples], ignore_index=True)
+
+# Step 3: Features and labels
 X = df["reviews.text"]
 y = df["label"]
-#ndjjjd
-# Create pipeline (vectorizer + model)
+
+# Step 4: Create pipeline with bigrams
 pipeline = Pipeline([
-    ("tfidf", TfidfVectorizer(max_features=5000)),
+    ("tfidf", TfidfVectorizer(max_features=5000, ngram_range=(1, 2))),  # 👈 BIGRAMS!
     ("clf", LogisticRegression(max_iter=1000))
 ])
 
-# Train the model
+# Step 5: Train the model
 pipeline.fit(X, y)
 
-# Save the full pipeline
+# Step 6: Save the full pipeline
 joblib.dump(pipeline, "model.pkl")
-print("✅ Model pipeline trained and saved to model.pkl")
+print("✅ Model pipeline trained with bigrams & custom examples — saved to model.pkl")
+
+
+# # Load data
+# df = pd.read_csv("train_data.csv")
+# df = df.dropna(subset=["reviews.text", "label"])
+
+# # Features and labels
+# X = df["reviews.text"]
+# y = df["label"]
+# #ndjjjd
+# # Create pipeline (vectorizer + model)
+# pipeline = Pipeline([
+#     ("tfidf", TfidfVectorizer(max_features=5000)),
+#     ("clf", LogisticRegression(max_iter=1000))
+# ])
+
+# # Train the model
+# pipeline.fit(X, y)
+
+# # Save the full pipeline
+# joblib.dump(pipeline, "model.pkl")
+# print("✅ Model pipeline trained and saved to model.pkl")
 
