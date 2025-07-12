@@ -470,7 +470,6 @@ print(accuracy_score(y_val, y_pred)*100)
 
 # Everything is classified as Positive because of Imbalance Class
 
-# ### Project Week 2 Tasks:
 # 
 # #### Tackling Class Imbalance Problem:
 
@@ -1295,7 +1294,7 @@ with open('vectorizer.pkl', 'wb') as f:
     pickle.dump(tfidf, f)
 
 
-# In[5]:
+# In[ ]:
 
 
 # train_model.py
@@ -1319,6 +1318,7 @@ custom_examples = pd.DataFrame({
         "not bad at all",
         "not horrible",
         "not good",
+        "the product is very good"
         "not the worst",
         "not a bad product",
         "it's not awful",
@@ -1338,7 +1338,7 @@ custom_examples = pd.DataFrame({
 
     ],
     "label": [
-        2, 2, 2, 0, 2, 2, 2, 2, 1, 2 ,0, 0, 0, 0, 0, 0, 0, 0, 0, 0 # Adjust sentiment: 0 = Negative, 1 = Neutral, 2 = Positive
+        2, 2, 2, 0,2, 2, 2, 2, 2, 1, 2 ,0, 0, 0, 0, 0, 0, 0, 0, 0, 0 # Adjust sentiment: 0 = Negative, 1 = Neutral, 2 = Positive
     ]
 })
 
@@ -1351,7 +1351,7 @@ y = df["label"]
 
 # Step 4: Create pipeline with bigrams
 pipeline = Pipeline([
-    ("tfidf", TfidfVectorizer(max_features=5000, ngram_range=(1, 2))),  # 👈 BIGRAMS!
+    ("tfidf", TfidfVectorizer(max_features=5000, ngram_range=(1, 2))),  
     ("clf", LogisticRegression(max_iter=1000))
 ])
 
@@ -1360,7 +1360,7 @@ pipeline.fit(X, y)
 
 # Step 6: Save the full pipeline
 joblib.dump(pipeline, "model.pkl")
-print("✅ Model pipeline trained with bigrams & custom examples — saved to model.pkl")
+print("Model pipeline trained with bigrams & custom examples — saved to model.pkl")
 
 
 # # Load data
