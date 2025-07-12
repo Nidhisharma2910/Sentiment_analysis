@@ -1294,7 +1294,7 @@ with open('vectorizer.pkl', 'wb') as f:
     pickle.dump(tfidf, f)
 
 
-# In[ ]:
+# In[1]:
 
 
 # train_model.py
@@ -1305,20 +1305,18 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 import joblib
 
-
-
-# Step 1: Load data
+# Step 1: Load dataset
 df = pd.read_csv("train_data.csv")
 df = df.dropna(subset=["reviews.text", "label"])
 
-# Step 2: Add custom negation examples
+# Step 2: Add custom negation and sentiment examples
 custom_examples = pd.DataFrame({
     "reviews.text": [
         "this product is not bad",
         "not bad at all",
         "not horrible",
         "not good",
-        "the product is very good"
+        "the product is very good",
         "not the worst",
         "not a bad product",
         "it's not awful",
@@ -1334,53 +1332,51 @@ custom_examples = pd.DataFrame({
         "complete waste of money",
         "bad build quality",
         "terrible product",
-        "did not like the product"
-
+        "did not like the product",
+          # Neutral (1)
+        "the product works fine but nothing exceptional",
+        "average performance, okay for basic tasks",
+        "build quality is average but usable",
+        "received the item late but it works",
+        "not bad, not great either",
+        "performance is acceptable for daily use",
+        "okay-ish product, nothing special",
+        "battery life is decent but not impressive"
     ],
     "label": [
-        2, 2, 2, 0,2, 2, 2, 2, 2, 1, 2 ,0, 0, 0, 0, 0, 0, 0, 0, 0, 0 # Adjust sentiment: 0 = Negative, 1 = Neutral, 2 = Positive
+        2, 2, 2, 0, 2, 2, 2, 2, 2, 1, 2,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,1,1,1,1,1,1,1,1
     ]
 })
 
-# Combine with original data
-df = pd.concat([df, custom_examples], ignore_index=True)
+# Step 2b: Add extra positive reviews
+custom_positive = pd.DataFrame({
+    'reviews.text': [
+        'this product is very good',
+        'absolutely fantastic product',
+        'really satisfied and very happy',
+        'worth buying, highly recommended'
+    ],
+    'label': [2, 2, 2, 2]  # 2 = Positive
+})
 
-# Step 3: Features and labels
+# Step 3: Combine original + custom examples
+df = pd.concat([df, custom_examples, custom_positive], ignore_index=True)
+
+# Step 4: Features and labels
 X = df["reviews.text"]
 y = df["label"]
 
-# Step 4: Create pipeline with bigrams
+# Step 5: Pipeline with bigram TF-IDF
 pipeline = Pipeline([
-    ("tfidf", TfidfVectorizer(max_features=5000, ngram_range=(1, 2))),  
+    ("tfidf", TfidfVectorizer(ngram_range=(1, 2), max_features=5000)),
     ("clf", LogisticRegression(max_iter=1000))
 ])
 
-# Step 5: Train the model
+# Step 6: Train the model
 pipeline.fit(X, y)
 
-# Step 6: Save the full pipeline
+# Step 7: Save model
 joblib.dump(pipeline, "model.pkl")
-print("Model pipeline trained with bigrams & custom examples — saved to model.pkl")
-
-
-# # Load data
-# df = pd.read_csv("train_data.csv")
-# df = df.dropna(subset=["reviews.text", "label"])
-
-# # Features and labels
-# X = df["reviews.text"]
-# y = df["label"]
-# #ndjjjd
-# # Create pipeline (vectorizer + model)
-# pipeline = Pipeline([
-#     ("tfidf", TfidfVectorizer(max_features=5000)),
-#     ("clf", LogisticRegression(max_iter=1000))
-# ])
-
-# # Train the model
-# pipeline.fit(X, y)
-
-# # Save the full pipeline
-# joblib.dump(pipeline, "model.pkl")
-# print("✅ Model pipeline trained and saved to model.pkl")
+print(" Model trained with bigrams + custom reviews — saved to model.pkl")
 
